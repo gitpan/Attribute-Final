@@ -2,7 +2,7 @@ package Attribute::Final;
 use 5.006;
 use strict;
 use warnings;
-our $VERSION = '1.0';
+our $VERSION = '1.1';
 our %marked;
 my @all_packages;
 use B qw(svref_2object);
@@ -22,13 +22,13 @@ sub check {
     no strict 'refs';
     fill_packages("main") unless @all_packages;
     for my $derived_pack (@all_packages) {
-        next unless my @isa = @{$derived_pack."::ISA"};
+        next unless @{$derived_pack."::ISA"};
         for my $marked_pack (keys %marked) {
-            next unless grep { $marked_pack eq $_ } @isa;
+            next unless $derived_pack->isa($marked_pack);
             for my $meth (@{$marked{$marked_pack}}) {
-                my $name = $marked_pack."::".$meth;
                 my $glob_ref = \*{$derived_pack."::".$meth};
                 if (*{$glob_ref}{CODE}) {
+                    my $name = $marked_pack."::".$meth;
                     my $b = svref_2object($glob_ref);
                     die "Cannot override final method $name at ".
                         $b->FILE. ", line ".$b->LINE."\n";
@@ -42,7 +42,7 @@ CHECK { Attribute::Final->check() }
 
 package UNIVERSAL;
 use Attribute::Handlers;
-sub final :ATTR(ANY) {
+sub final :ATTR(CODE) {
     my ($pack, $ref) = @_;
     push @{$marked{$pack}}, *{$ref}{NAME};
 }
