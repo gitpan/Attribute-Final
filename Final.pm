@@ -2,7 +2,7 @@ package Attribute::Final;
 use 5.006;
 use strict;
 use warnings;
-our $VERSION = '1.1';
+our $VERSION = '1.3';
 our %marked;
 my @all_packages;
 use B qw(svref_2object);
@@ -79,7 +79,9 @@ classes with marked methods override those methods.
 
 =head1 AUTHOR
 
-Simon Cozens, C<simon@cpan.org>
+Originally by Simon Cozens, C<simon@cpan.org>
+
+Maintained by Scott Penrose, C<scott@cpan.org>
 
 =head1 SEE ALSO
 
